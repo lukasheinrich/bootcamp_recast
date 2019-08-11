@@ -15,10 +15,12 @@ yield_scaling:
   process:
     process_type: interpolated-script-cmd
     script: |
-      echo ok > {scaled_events}
+      python /code/scale_signal.py \
+            /code/testdata/llbb_VpT.root \
+            {target_xsec} --lumi 1000 --outputfile {scaled_events}
   environment:
     environment_type: docker-encapsulated
-    image: pyhf/pyhf
+    image: lukasheinrich/bootcamp_scale
   publisher:
     publisher_type: interpolated-pub
     publish:
@@ -29,9 +31,9 @@ fitting:
     process_type: interpolated-script-cmd
     script: |
      python /code/run_fit.py \
-            /code/testdata/test_data.json \
-            /code/testdata/test_background.json \
-            /code/testdata/test_signal.json \
+            {data} \
+            {backgrounds} \
+            {signal} \
             --outputfile {fit_result}
   environment:
     environment_type: docker-encapsulated
