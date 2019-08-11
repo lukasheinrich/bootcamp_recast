@@ -2,7 +2,7 @@ event_selection:
   process:
     process_type: interpolated-script-cmd
     script: |
-      echo process {input_file} > {output_file}
+      cp {input_file} {output_file}
   environment:
     environment_type: docker-encapsulated
     image: pyhf/pyhf
@@ -16,8 +16,9 @@ yield_scaling:
     process_type: interpolated-script-cmd
     script: |
       python /code/scale_signal.py \
-            /code/testdata/llbb_VpT.root \
-            {target_xsec} --lumi 1000 --outputfile {scaled_events}
+            {processed_file} {target_xsec} \
+            --outputfile {scaled_events}   \
+            --lumi 1000 
   environment:
     environment_type: docker-encapsulated
     image: lukasheinrich/bootcamp_scale
