@@ -1,0 +1,30 @@
+stages:
+- name: event_selection
+  dependencies: [init]
+  scheduler:
+    scheduler_type: singlestep-stage
+    parameters:
+      input_file: {step: init, output: signal_events}
+      output_file: '{workdir}/selected.root'
+    step: {$ref: steps.yml#/event_selection}
+
+- name: yield_scaling
+  dependencies: [event_selection]
+  scheduler:
+    scheduler_type: singlestep-stage
+    parameters:
+      target_xsec: {step: init, output: signal_xsec}
+      processed_file: {step: event_selection, output: selected_events}
+      scaled_events: '{workdir}/scaled.json'
+    step: {$ref: steps.yml#/yield_scaling}
+
+- name: fitting
+  dependencies: [yield_scaling,init]
+  scheduler:
+    scheduler_type: singlestep-stage
+    parameters:
+      backgrounds: {step: init, output: backgrounds}
+      data: {step: init, output: data}
+      signal: {step: yield_scaling, output: expected_signal}
+      fit_result: '{workdir}/result.json'
+    step: {$ref: steps.yml#/fitting}

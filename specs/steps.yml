@@ -1,0 +1,42 @@
+event_selection:
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      echo process {input_file} > {output_file}
+  environment:
+    environment_type: docker-encapsulated
+    image: pyhf/pyhf
+  publisher:
+    publisher_type: interpolated-pub
+    publish:
+      selected_events: '{output_file}'
+
+yield_scaling:
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+      echo ok > {scaled_events}
+  environment:
+    environment_type: docker-encapsulated
+    image: pyhf/pyhf
+  publisher:
+    publisher_type: interpolated-pub
+    publish:
+      expected_signal: '{scaled_events}'
+
+fitting:
+  process:
+    process_type: interpolated-script-cmd
+    script: |
+     python /code/run_fit.py \
+            /code/testdata/test_data.json \
+            /code/testdata/test_background.json \
+            /code/testdata/test_signal.json \
+            --outputfile {fit_result}
+  environment:
+    environment_type: docker-encapsulated
+    image: lukasheinrich/bootcamp_fit
+  publisher:
+    publisher_type: interpolated-pub
+    publish:
+      inference_result: '{fit_result}'
