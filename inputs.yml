@@ -1,0 +1,4 @@
+signal_events: fakeinput.root
+signal_xsec: 10.5
+backgrounds: backgrounds.json
+data: data.json
